@@ -1,0 +1,82 @@
+#include "thetastar.hpp"
+
+#include <cmath>
+#include <limits>
+#include <queue>
+#include <stdexcept>
+
+namespace pf {
+
+std::vector<coord> theta_star(grid &g, coord start, coord end) {
+  if (g.h * g.w != g.nodes.size())
+    throw std::runtime_error("mismatched grid and grid::nodes size");
+
+  using queued = std::pair<coord, float>;
+  auto cmp = [](const queued &a, const queued &b) {
+    return a.second > b.second;
+  };
+  std::priority_queue<queued, std::vector<queued>, decltype(cmp)> q(cmp);
+  q.push({start, 0.f});
+
+  std::vector<float> cost_sums(g.nodes.size(),
+                               std::numeric_limits<float>::infinity());
+  cost_sums[g.as_idx(start)] = 0.f;
+
+  while (q.size()) {
+    coord curr = q.top().first;
+    const float curr_cost = cost_sums[g.as_idx(curr)];
+    q.pop();
+
+    auto d = [](const coord &a, const coord &b) {
+      return std::hypot(a.first - b.first, a.second - b.second);
+    };
+
+    for (auto &next : g.neighbours(curr)) {
+      float dist = d(curr, next);
+      float new_cost = curr_cost + dist * g[next].cost;
+      if (new_cost < cost_sums[g.as_idx(next)]) {
+        // theta* modification
+        // TODO: proper visibility check
+        bool visible = g.in_bounds(g[curr].parent);
+        if (visible) {
+          curr = g[curr].parent;
+          new_cost = cost_sums[g.as_idx(curr)] + d(curr, next) * g[next].cost;
+        }
+        cost_sums[g.as_idx(next)] = new_cost;
+        g[next].parent = curr;
+        float heuristic = d(next, end);
+        q.push({next, new_cost + heuristic});
+      }
+    }
+  }
+
+  std::vector<coord> path = {};
+  const int max_depth = g.nodes.size();
+  coord c = end;
+  for (int i = 0; i < max_depth; ++i) {
+    try {
+      if (g.at(c).is_wall()) {
+        std::string str = "wall found in trace at " + to_string(c);
+        throw std::logic_error(str);
+      }
+    } catch (std::exception &e) { return {}; }  // no path found
+
+    path.insert(path.begin(), c);
+    if (c == start) break;
+    c = g[c].parent;
+  }
+
+  if (path.size() && path.front() != start) {
+    throw std::length_error("max depth reached");
+  }
+
+  return path;
+}
+
+std::string to_string(const std::vector<coord> &path) {
+  std::string res = "";
+  for (auto &c : path) { res += to_string(c) + "\n"; }
+  return res;
+}
+
+};  // namespace pf
