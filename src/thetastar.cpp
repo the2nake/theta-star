@@ -30,22 +30,26 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
     auto d = [](const coord &a, const coord &b) {
       return std::hypot(a.first - b.first, a.second - b.second);
     };
+    auto h = [&d, &end](const coord &c) { return d(c, end); };
 
     for (auto &next : g.neighbours(curr)) {
       float dist = d(curr, next);
       float new_cost = curr_cost + dist * g[next].cost;
-      if (new_cost < cost_sums[g.as_idx(next)]) {
+      float i = g.as_idx(next);
+
+      if (new_cost < cost_sums[i]) {
         // theta* modification
         // TODO: proper visibility check
         bool visible = g.in_bounds(g[curr].parent);
-        if (visible) {
+        if (false && visible) {
           curr = g[curr].parent;
           new_cost = cost_sums[g.as_idx(curr)] + d(curr, next) * g[next].cost;
         }
-        cost_sums[g.as_idx(next)] = new_cost;
+
+        if (std::isinf(cost_sums[i])) q.push({next, new_cost + h(next)});
+
         g[next].parent = curr;
-        float heuristic = d(next, end);
-        q.push({next, new_cost + heuristic});
+        cost_sums[i] = new_cost;
       }
     }
   }
