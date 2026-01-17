@@ -1,6 +1,7 @@
 #include "thetastar.hpp"
 
 #include <cmath>
+#include <limits>
 #include <queue>
 #include <stdexcept>
 
@@ -20,7 +21,8 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
     throw std::runtime_error("mismatched grid and grid::nodes size");
 
   min_queue<coord, float> frontier;
-  std::vector<float> cost_sums(g.nodes.size(), INFINITY);
+  std::vector<float> cost_sums(g.nodes.size(),
+                               std::numeric_limits<float>::infinity());
 
   frontier.push({start, 0.f});
   cost_sums[g.as_idx(start)] = 0.f;
@@ -34,7 +36,7 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
       return std::hypot(a.first - b.first, a.second - b.second);
     };
     auto h = [&](coord c) { return d(c, end); };
-    auto cost_of = [&d, &g, &cost_sums](coord from, coord to) {
+    auto cost_of = [&](coord from, coord to) {
       return cost_sums[g.as_idx(from)] + d(from, to) * g[to].cost;
     };
 

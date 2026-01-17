@@ -40,8 +40,7 @@ struct grid {
 };
 
 std::string to_string(coord c);
-std::string to_string(const grid &g,
-                      const std::vector<coord> &highlight = {});
+std::string to_string(const grid &g, const std::vector<coord> &highlight = {});
 std::string to_string(const grid &g, const std::set<coord> &highlight = {});
 
 };  // namespace pf

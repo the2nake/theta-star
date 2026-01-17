@@ -90,18 +90,12 @@ bool grid::in_bounds(coord c) const {
 }
 
 cell &grid::at(coord c) {
-  if (!in_bounds(c)) {
-    std::string str = to_string(c) + " not inside grid";
-    throw std::out_of_range(str);
-  }
+  if (!in_bounds(c)) throw std::out_of_range(to_string(c) + " outside grid");
   return operator[](c);
 }
 
 const cell &grid::at(coord c) const {
-  if (!in_bounds(c)) {
-    std::string str = to_string(c) + " not inside grid";
-    throw std::out_of_range(str);
-  }
+  if (!in_bounds(c)) throw std::out_of_range(to_string(c) + " outside grid");
   return operator[](c);
 }
 
@@ -125,27 +119,26 @@ std::vector<coord> grid::neighbours(coord c) const {
 
 bool grid::visible(coord a, coord b) {
   if (!in_bounds(a) || !in_bounds(b)) return false;
-  auto &[y0, x0] = a;
-  auto &[y1, x1] = b;
-  int dy = y1 - y0;
-  int dx = x1 - x0;
 
   coord curr = a;
+  int dy = b.first - a.first;
+  int dx = b.second - a.second;
+
   int M = std::abs(dx);
   int m = std::abs(dy);
   coord dM = {0, dx < 0 ? -1 : 1};
   coord dm = {dy < 0 ? -1 : 1, 0};
 
   if (std::abs(dy) > std::abs(dx)) {
-    std::swap(dM, dm);
+    std::swap(dm, dM);
     std::swap(m, M);
   }
 
   for (int i = 0, j = 0; i <= M; ++i) {
-    if (operator[](curr).is_wall()) { return false; }
+    if (operator[](curr).is_wall()) return false;
 
-    // within negative half, the true line is above
-    if (2 * M * j + M - 2 * (i + 1) * m <= 0) {
+    // within the negative half, the true line is above
+    if (2 * (M * j - m * i - m) + M <= 0) {
       ++j;
       curr.first += dm.first;
       curr.second += dm.second;
