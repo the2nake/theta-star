@@ -31,26 +31,26 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
       return std::hypot(a.first - b.first, a.second - b.second);
     };
     auto h = [&](coord c) { return d(c, end); };
-    auto cost_to = [&](coord next) {
-      return cost_sums[g.as_idx(curr)] + d(curr, next) * g[next].cost;
+    auto cost_of = [&d, &g, &cost_sums](coord from, coord to) {
+      return cost_sums[g.as_idx(from)] + d(from, to) * g[to].cost;
     };
 
     for (auto &next : g.neighbours(curr)) {
       if (g[next].is_wall()) continue;
 
-      float new_cost = cost_to(next);
+      float new_cost = cost_of(curr, next);
       const float i = g.as_idx(next);
 
       if (new_cost < cost_sums[i]) {
-        // TODO: proper visibility check
-        if (g.visible(curr, next)) {
-          curr = g[curr].parent;
-          new_cost = cost_to(next);
+        if (g.visible(g[curr].parent, next)) {
+          g[next].parent = g[curr].parent;
+          new_cost = cost_of(g[next].parent, next);
+        } else {
+          g[next].parent = curr;
         }
 
         if (std::isinf(cost_sums[i])) q.push({next, new_cost + h(next)});
 
-        g[next].parent = curr;
         cost_sums[i] = new_cost;
       }
     }

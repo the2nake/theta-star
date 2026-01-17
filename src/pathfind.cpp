@@ -1,8 +1,10 @@
 #include "pathfind.hpp"
 
 #include <cmath>
+#include <cstdlib>
 #include <limits>
 #include <stdexcept>
+#include <utility>
 
 namespace pf {
 
@@ -84,7 +86,7 @@ cell &grid::operator[](coord c) { return nodes[w * c.first + c.second]; }
 const cell &grid::operator[](coord c) const { return nodes[as_idx(c)]; }
 
 bool grid::in_bounds(coord c) const {
-  return 0 <= c.first && c.first < h || 0 <= c.second || c.second < w;
+  return 0 <= c.first && c.first < h && 0 <= c.second && c.second < w;
 }
 
 cell &grid::at(coord c) {
@@ -114,11 +116,43 @@ std::vector<coord> grid::neighbours(coord c) const {
 
   for (int i = i0; i <= i1; ++i) {
     for (int j = j0; j <= j1; ++j) {
-      if (nodes[w * i + j].cost >= 0.f) res.emplace_back(i, j);
+      if (!nodes[w * i + j].is_wall()) res.emplace_back(i, j);
     }
   }
 
   return res;
 }
 
+bool grid::visible(coord a, coord b) {
+  if (!in_bounds(a) || !in_bounds(b)) return false;
+  auto &[y0, x0] = a;
+  auto &[y1, x1] = b;
+  int dy = y1 - y0;
+  int dx = x1 - x0;
+
+  coord curr = a;
+  int M = std::abs(dx);
+  int m = std::abs(dy);
+  coord dM = {0, dx < 0 ? -1 : 1};
+  coord dm = {dy < 0 ? -1 : 1, 0};
+
+  if (std::abs(dy) > std::abs(dx)) {
+    std::swap(dM, dm);
+    std::swap(m, M);
+  }
+
+  for (int i = 0, j = 0; i <= M; ++i) {
+    if (operator[](curr).is_wall()) { return false; }
+
+    // within negative half, the true line is above
+    if (2 * M * j + M - 2 * (i + 1) * m <= 0) {
+      ++j;
+      curr.first += dm.first;
+      curr.second += dm.second;
+    }
+    curr.first += dM.first;
+    curr.second += dM.second;
+  }
+  return true;
+}  // namespace pf
 };  // namespace pf
