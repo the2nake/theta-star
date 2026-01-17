@@ -12,13 +12,33 @@
 
 int main() {
   pf::grid g(10, 10);
-  g.at({9, 3}).parent = {0, 0};
-  g.at({0, 0}).parent = {9, 3};
+  // std::string area =
+  //     " ###   ###"
+  //     " # #  ####"
+  //     " # #   ###"
+  //     " # #  ####"
+  //     "       ###"
+  //     "   #  ####"
+  //     " ###    ##"
+  //     " #      ##"
+  //     " ###   ###"
+  //     " ###   ###";
 
-  // g.at({0, 0}).cost = -1.f;
+  std::string area =
+      "          "
+      "          "
+      "          "
+      " #####    "
+      " #####    "
+      " #####    "
+      " #####    "
+      "          "
+      "          "
+      "          ";
+  g.load(area);
 
   try {
-    auto result = pf::theta_star(g, {0, 0}, {9, 5});
+    auto result = pf::theta_star(g, {0, 2}, {9, 5});
     std::print("{}", pf::to_string(g, result));
     std::println("path:\n{}", pf::to_string(result));
   } catch (std::exception &e) { std::print("error: {}\n", e.what()); }

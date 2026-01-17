@@ -24,26 +24,29 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
 
   while (q.size()) {
     coord curr = q.top().first;
-    const float curr_cost = cost_sums[g.as_idx(curr)];
+    if (curr == end) break;
     q.pop();
 
     auto d = [](const coord &a, const coord &b) {
       return std::hypot(a.first - b.first, a.second - b.second);
     };
-    auto h = [&d, &end](const coord &c) { return d(c, end); };
+    auto h = [&](const coord &c) { return d(c, end); };
+    auto cost_to = [&](const coord &next) {
+      return cost_sums[g.as_idx(curr)] + d(curr, next) * g[next].cost;
+    };
 
     for (auto &next : g.neighbours(curr)) {
-      float dist = d(curr, next);
-      float new_cost = curr_cost + dist * g[next].cost;
-      float i = g.as_idx(next);
+      if (g[next].is_wall()) continue;
+
+      float new_cost = cost_to(next);
+      const float i = g.as_idx(next);
 
       if (new_cost < cost_sums[i]) {
-        // theta* modification
         // TODO: proper visibility check
         bool visible = g.in_bounds(g[curr].parent);
         if (false && visible) {
           curr = g[curr].parent;
-          new_cost = cost_sums[g.as_idx(curr)] + d(curr, next) * g[next].cost;
+          new_cost = cost_to(next);
         }
 
         if (std::isinf(cost_sums[i])) q.push({next, new_cost + h(next)});
@@ -63,7 +66,10 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
         std::string str = "wall found in trace at " + to_string(c);
         throw std::logic_error(str);
       }
-    } catch (std::exception &e) { return {}; }  // no path found
+    } catch (std::exception &e) {
+      return path;
+      {};
+    }  // no path found
 
     path.insert(path.begin(), c);
     if (c == start) break;

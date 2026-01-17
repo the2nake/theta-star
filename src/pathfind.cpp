@@ -1,5 +1,7 @@
 #include "pathfind.hpp"
 
+#include <cmath>
+#include <limits>
 #include <stdexcept>
 
 namespace pf {
@@ -52,9 +54,30 @@ std::string to_string(const pf::grid &g, const std::set<coord> &highlight) {
 }
 
 cell::cell() : parent({-1, -1}), cost(1.0) {}
-bool cell::is_wall() const { return cost < 0.f; }
+bool cell::is_wall() const { return std::isinf(cost); }
 
 grid::grid(int h, int w) : h(h), w(w), nodes(h * w) {}
+
+void grid::load(std::string_view str) {
+  if (str.size() != nodes.size())
+    throw std::logic_error("string does not match grid size");
+
+  auto it = nodes.begin();
+  for (auto &c : str) {
+    switch (c) {
+      case ' ':
+        it->cost = 1.f;
+        break;
+      case '#':
+        it->cost = std::numeric_limits<float>::infinity();
+        break;
+      default:
+        it->cost = 1.f;
+        break;
+    }
+    ++it;
+  }
+}
 
 cell &grid::operator[](coord c) { return nodes[w * c.first + c.second]; }
 
@@ -91,7 +114,7 @@ std::vector<coord> grid::neighbours(coord c) const {
 
   for (int i = i0; i <= i1; ++i) {
     for (int j = j0; j <= j1; ++j) {
-      if (i != c.first || j != c.second) res.emplace_back(i, j);
+      if (nodes[w * i + j].cost >= 0.f) res.emplace_back(i, j);
     }
   }
 

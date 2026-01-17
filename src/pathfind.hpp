@@ -2,6 +2,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace pf {
@@ -20,6 +21,8 @@ struct cell {
 
 struct grid {
   grid(int h, int w);
+
+  void load(std::string_view str);
 
   inline int as_idx(coord c) const { return w * c.first + c.second; }
   cell &operator[](coord c);
