@@ -9,6 +9,7 @@ namespace pf {
 
 // row then column
 using coord = std::pair<int, int>;
+coord operator+(const coord &a, const coord &b);
 
 struct cell {
   cell();

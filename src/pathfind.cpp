@@ -8,6 +8,10 @@
 
 namespace pf {
 
+coord operator+(const coord &a, const coord &b) {
+  return {a.first + b.first, a.second + b.second};
+}
+
 std::string to_string(coord c) {
   return "(" + std::to_string(c.first) + " " + std::to_string(c.second) + ")";
 }
@@ -140,11 +144,9 @@ bool grid::visible(coord a, coord b) {
     // within the negative half, the true line is above
     if (2 * (M * j - m * i - m) + M <= 0) {
       ++j;
-      curr.first += dm.first;
-      curr.second += dm.second;
+      curr = curr + dm;
     }
-    curr.first += dM.first;
-    curr.second += dM.second;
+    curr = curr + dM;
   }
   return true;
 }  // namespace pf
