@@ -1,31 +1,34 @@
 #include "thetastar.hpp"
 
 #include <cmath>
-#include <limits>
 #include <queue>
 #include <stdexcept>
 
 namespace pf {
 
+template <typename T, typename U>
+using container = std::vector<std::pair<T, U>>;
+
+template <typename T, typename U>
+using min_queue = std::priority_queue<std::pair<T, U>, container<T, U>,
+                                      decltype([](auto &a, auto &b) {
+                                        return a.second > b.second;
+                                      })>;
+
 std::vector<coord> theta_star(grid &g, coord start, coord end) {
   if (g.h * g.w != g.nodes.size())
     throw std::runtime_error("mismatched grid and grid::nodes size");
 
-  using queued = std::pair<coord, float>;
-  auto cmp = [](const queued &a, const queued &b) {
-    return a.second > b.second;
-  };
-  std::priority_queue<queued, std::vector<queued>, decltype(cmp)> q(cmp);
-  q.push({start, 0.f});
+  min_queue<coord, float> frontier;
+  std::vector<float> cost_sums(g.nodes.size(), INFINITY);
 
-  std::vector<float> cost_sums(g.nodes.size(),
-                               std::numeric_limits<float>::infinity());
+  frontier.push({start, 0.f});
   cost_sums[g.as_idx(start)] = 0.f;
 
-  while (q.size()) {
-    coord curr = q.top().first;
+  while (frontier.size()) {
+    coord curr = frontier.top().first;
     if (curr == end) break;
-    q.pop();
+    frontier.pop();
 
     auto d = [](coord a, coord b) {
       return std::hypot(a.first - b.first, a.second - b.second);
@@ -49,8 +52,7 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
           g[next].parent = curr;
         }
 
-        if (std::isinf(cost_sums[i])) q.push({next, new_cost + h(next)});
-
+        if (std::isinf(cost_sums[i])) frontier.push({next, new_cost + h(next)});
         cost_sums[i] = new_cost;
       }
     }
@@ -65,10 +67,7 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
         std::string str = "wall found in trace at " + to_string(c);
         throw std::logic_error(str);
       }
-    } catch (std::exception &e) {
-      return path;
-      {};
-    }  // no path found
+    } catch (std::exception &e) { return {}; }  // no path found
 
     path.insert(path.begin(), c);
     if (c == start) break;
