@@ -6,16 +6,16 @@
 
 namespace pf {
 
-std::string to_string(const pf::coord &c) {
+std::string to_string(coord c) {
   return "(" + std::to_string(c.first) + " " + std::to_string(c.second) + ")";
 }
 
-std::string to_string(const pf::grid &g, const std::vector<coord> &highlight) {
+std::string to_string(const grid &g, const std::vector<coord> &highlight) {
   std::set<coord> s(highlight.begin(), highlight.end());
   return to_string(g, s);
 }
 
-std::string to_string(const pf::grid &g, const std::set<coord> &highlight) {
+std::string to_string(const grid &g, const std::set<coord> &highlight) {
   std::string res;
   for (int i = -1; i <= g.h; ++i) {
     if (i == -1) {

@@ -33,14 +33,15 @@ struct grid {
   const cell &at(coord c) const;
 
   std::vector<coord> neighbours(coord c) const;
+  bool visible(coord a, coord b);
 
   std::vector<cell> nodes;
   const int h, w;
 };
 
-std::string to_string(const coord &c);
-std::string to_string(const pf::grid &g,
+std::string to_string(coord c);
+std::string to_string(const grid &g,
                       const std::vector<coord> &highlight = {});
-std::string to_string(const pf::grid &g, const std::set<coord> &highlight = {});
+std::string to_string(const grid &g, const std::set<coord> &highlight = {});
 
 };  // namespace pf

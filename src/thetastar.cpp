@@ -27,11 +27,11 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
     if (curr == end) break;
     q.pop();
 
-    auto d = [](const coord &a, const coord &b) {
+    auto d = [](coord a, coord b) {
       return std::hypot(a.first - b.first, a.second - b.second);
     };
-    auto h = [&](const coord &c) { return d(c, end); };
-    auto cost_to = [&](const coord &next) {
+    auto h = [&](coord c) { return d(c, end); };
+    auto cost_to = [&](coord next) {
       return cost_sums[g.as_idx(curr)] + d(curr, next) * g[next].cost;
     };
 
@@ -43,8 +43,7 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
 
       if (new_cost < cost_sums[i]) {
         // TODO: proper visibility check
-        bool visible = g.in_bounds(g[curr].parent);
-        if (false && visible) {
+        if (g.visible(curr, next)) {
           curr = g[curr].parent;
           new_cost = cost_to(next);
         }
