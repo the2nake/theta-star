@@ -133,7 +133,7 @@ bool grid::visible(coord a, coord b) {
   coord dM = {0, dx < 0 ? -1 : 1};
   coord dm = {dy < 0 ? -1 : 1, 0};
 
-  if (std::abs(dy) > std::abs(dx)) {
+  if (m > M) {
     std::swap(dm, dM);
     std::swap(m, M);
   }
