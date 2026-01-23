@@ -144,10 +144,13 @@ bool grid::visible(coord a, coord b) {
     // within the negative half, the true line is above
     if (2 * (M * j - m * i - m) + M <= 0) {
       ++j;
-      curr = curr + dm;
+      curr.first += dm.first;
+      curr.second += dm.second;
     }
-    curr = curr + dM;
+    curr.first += dM.first;
+    curr.second += dM.second;
   }
   return true;
-}  // namespace pf
+}
+
 };  // namespace pf
