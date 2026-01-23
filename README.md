@@ -2,7 +2,7 @@
 
 A visualization of the Theta\* algorithm, often used in robotics. It extends on A\* by allowing non-adjacent grid cells to be joined in a path if they have a clear line of sight, allowing for smoother outputs with fewer jagged edges.
 
-<img alt="preview image of theta star path" src="https://github.com/the2nake/theta-star/blob/master/docs/demo.gif?raw=true"  height="600"/>
+<img alt="preview image of theta star path" src="https://github.com/the2nake/theta-star/blob/main/docs/demo.gif?raw=true"  height="600"/>
 
 ## [features]
 
