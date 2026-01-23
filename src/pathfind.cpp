@@ -12,6 +12,8 @@ coord operator+(const coord &a, const coord &b) {
   return {a.first + b.first, a.second + b.second};
 }
 
+coord operator*(int n, const coord &c) { return {n * c.first, n * c.second}; }
+
 std::string to_string(coord c) {
   return "(" + std::to_string(c.first) + " " + std::to_string(c.second) + ")";
 }

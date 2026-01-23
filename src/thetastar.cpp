@@ -1,5 +1,6 @@
 #include "thetastar.hpp"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <queue>
@@ -15,8 +16,13 @@ using min_queue = std::priority_queue<std::pair<T, U>, container<T, U>,
                                       decltype([](auto &a, auto &b) {
                                         return a.second > b.second;
                                       })>;
-
-std::vector<coord> theta_star(grid &g, coord start, coord end) {
+#ifndef DEMO
+std::vector<coord> theta_star(grid &g, coord start, coord end)
+#else
+std::vector<coord> theta_star(grid &g, coord start, coord end,
+                              std::vector<step> &record)
+#endif
+{
   if (g.h * g.w != g.nodes.size())
     throw std::runtime_error("mismatched grid and grid::nodes size");
 
@@ -26,6 +32,10 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
 
   frontier.push({start, 0.f});
   cost_sums[g.as_idx(start)] = 0.f;
+
+#ifdef DEMO
+  record.emplace_back(step{step_type::queue, {start}});
+#endif
 
   while (frontier.size()) {
     coord curr = frontier.top().first;
@@ -54,7 +64,7 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
           g[next].parent = curr;
         }
 
-        if (std::isinf(cost_sums[i])) frontier.push({next, new_cost + h(next)});
+        frontier.push({next, new_cost + h(next)});
         cost_sums[i] = new_cost;
       }
     }
@@ -71,15 +81,16 @@ std::vector<coord> theta_star(grid &g, coord start, coord end) {
       }
     } catch (std::exception &e) { return {}; }  // no path found
 
-    path.insert(path.begin(), c);
+    path.emplace_back(c);
     if (c == start) break;
     c = g[c].parent;
   }
 
-  if (path.size() && path.front() != start) {
+  if (path.size() && path.back() != start) {
     throw std::length_error("max depth reached");
   }
 
+  std::reverse(path.begin(), path.end());
   return path;
 }
 

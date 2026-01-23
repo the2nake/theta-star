@@ -7,6 +7,8 @@ find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 file(GLOB SRC_FILES "src/*.cpp")
 add_executable(thetastar-demo ${SRC_FILES})
 
+target_compile_definitions(thetastar-demo PRIVATE DEMO)
+
 target_link_libraries(thetastar-demo PRIVATE SDL3::SDL3)
 set_target_properties(thetastar-demo PROPERTIES
   CXX_STANDARD 23
