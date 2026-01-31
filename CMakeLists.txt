@@ -8,8 +8,6 @@ find_package(SDL3 REQUIRED CONFIG REQUIRED COMPONENTS SDL3-shared)
 file(GLOB SRC_FILES "src/*.cpp")
 add_executable(${DEMOEXEC} ${SRC_FILES})
 
-target_compile_definitions(${DEMOEXEC} PRIVATE DEMO)
-
 target_link_libraries(${DEMOEXEC} PRIVATE SDL3::SDL3)
 set_target_properties(${DEMOEXEC} PROPERTIES
   CXX_STANDARD 23

@@ -41,11 +41,11 @@ SDL_Color lerp(SDL_Color a, SDL_Color b, float t) {
   };
 }
 
-void set_draw_color(SDL_Renderer *renderer, SDL_Color c) {
+void set_draw_color(SDL_Renderer* renderer, SDL_Color c) {
   SDL_SetRenderDrawColor(renderer, c.r, c.g, c.b, c.a);
 }
 
-void show(const pf::grid &g, const std::vector<pf::coord> &result) {
+void show(const pf::grid& g, const std::vector<pf::coord>& result) {
   std::print("{}", pf::to_string(g, result));
 }
 
@@ -58,7 +58,7 @@ auto elapsed(F f) {
   return std::pair{result, duration_cast<microseconds>(t1 - t0).count()};
 }
 
-void generate_maze(pf::grid &g, pf::coord s, pf::coord e) {
+void generate_maze(pf::grid& g, pf::coord s, pf::coord e) {
   using namespace pf;
 
   std::random_device dev;
@@ -82,7 +82,7 @@ void generate_maze(pf::grid &g, pf::coord s, pf::coord e) {
           possible[i] = true;
           ++valid;
         }
-      } catch (std::exception &e) {};
+      } catch (std::exception& e) {};
     }
 
     if (valid) {
@@ -120,9 +120,7 @@ int main() {
   g.at(start).cost = 1.0;
   g.at(end).cost = 1.0;
 
-  std::vector<pf::step> record;
-  auto [path, us] =
-      elapsed([&]() { return pf::theta_star(g, start, end, record); });
+  auto [path, us] = elapsed([&]() { return pf::theta_star(g, start, end); });
   std::println("path:\n{}", pf::to_string(path));
   std::println("runtime: {} us", us);
 
@@ -131,8 +129,8 @@ int main() {
   int w = cell_w * g.w, h = cell_w * g.h;
   unsigned long flags = SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
-  SDL_Window *win = SDL_CreateWindow("theta-star-demo", w, h, flags);
-  SDL_Renderer *ren = SDL_CreateRenderer(win, nullptr);
+  SDL_Window* win = SDL_CreateWindow("theta-star-demo", w, h, flags);
+  SDL_Renderer* ren = SDL_CreateRenderer(win, nullptr);
   SDL_SetRenderDrawBlendMode(ren, SDL_BLENDMODE_BLEND);
 
   int path_range = path.size();

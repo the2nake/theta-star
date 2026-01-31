@@ -13,16 +13,11 @@ using container = std::vector<std::pair<T, U>>;
 
 template <typename T, typename U>
 using min_queue = std::priority_queue<std::pair<T, U>, container<T, U>,
-                                      decltype([](auto &a, auto &b) {
+                                      decltype([](auto& a, auto& b) {
                                         return a.second > b.second;
                                       })>;
-#ifndef DEMO
-std::vector<coord> theta_star(grid &g, coord start, coord end)
-#else
-std::vector<coord> theta_star(grid &g, coord start, coord end,
-                              std::vector<step> &record)
-#endif
-{
+
+std::vector<coord> theta_star(grid& g, coord start, coord end) {
   if (g.h * g.w != g.nodes.size())
     throw std::runtime_error("mismatched grid and grid::nodes size");
 
@@ -32,10 +27,6 @@ std::vector<coord> theta_star(grid &g, coord start, coord end,
 
   frontier.push({start, 0.f});
   cost_sums[g.as_idx(start)] = 0.f;
-
-#ifdef DEMO
-  record.emplace_back(step{step_type::queue, {start}});
-#endif
 
   while (frontier.size()) {
     coord curr = frontier.top().first;
@@ -50,7 +41,7 @@ std::vector<coord> theta_star(grid &g, coord start, coord end,
       return cost_sums[g.as_idx(from)] + d(from, to) * g[to].cost;
     };
 
-    for (auto &next : g.neighbours(curr)) {
+    for (auto& next : g.neighbours(curr)) {
       if (g[next].is_wall()) continue;
 
       float new_cost = cost_of(curr, next);
@@ -79,7 +70,7 @@ std::vector<coord> theta_star(grid &g, coord start, coord end,
         std::string str = "wall found in trace at " + to_string(c);
         throw std::logic_error(str);
       }
-    } catch (std::exception &e) { return {}; }  // no path found
+    } catch (std::exception& e) { return {}; }  // no path found
 
     path.emplace_back(c);
     if (c == start) break;
@@ -94,9 +85,9 @@ std::vector<coord> theta_star(grid &g, coord start, coord end,
   return path;
 }
 
-std::string to_string(const std::vector<coord> &path) {
+std::string to_string(const std::vector<coord>& path) {
   std::string res = "";
-  for (auto &c : path) { res += to_string(c) + "\n"; }
+  for (auto& c : path) { res += to_string(c) + "\n"; }
   return res;
 }
 
