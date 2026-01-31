@@ -8,7 +8,7 @@
       "name": "(cmake) launch with lldb",
       "type": "lldb-dap",
       "request": "launch",
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "program": "${command:cmake.launchTargetPath}",
       "cwd": "${workspaceFolder}",
       "env": {
