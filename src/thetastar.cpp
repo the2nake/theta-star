@@ -45,9 +45,9 @@ std::vector<coord> theta_star(grid& g, coord start, coord end) {
       if (g[next].is_wall()) continue;
 
       float new_cost = cost_of(curr, next);
-      const float i = g.as_idx(next);
+      float& total_cost = cost_sums[g.as_idx(next)];
 
-      if (new_cost < cost_sums[i]) {
+      if (new_cost < total_cost) {
         if (g.visible(g[curr].parent, next)) {
           g[next].parent = g[curr].parent;
           new_cost = cost_of(g[next].parent, next);
@@ -56,7 +56,7 @@ std::vector<coord> theta_star(grid& g, coord start, coord end) {
         }
 
         frontier.push({next, new_cost + h(next)});
-        cost_sums[i] = new_cost;
+        total_cost = new_cost;
       }
     }
   }
