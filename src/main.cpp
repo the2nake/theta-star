@@ -126,8 +126,8 @@ int main() {
 
   // visualisation
 
-  char* sdl_wayland_hint = "SDL_VIDEO_DRIVER=wayland";
-  putenv(sdl_wayland_hint);
+  // set a hint to use wayland if another hint is not present
+  setenv("SDL_VIDEO_DRIVER", "wayland", 0);
   SDL_Init(SDL_INIT_VIDEO);
 
   int w = cell_w * g.w, h = cell_w * g.h;
