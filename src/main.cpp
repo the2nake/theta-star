@@ -7,7 +7,6 @@
 
 // write the blog post from a perspective of 1st year CS student who has not
 // heard of pathfinding before.
-
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_blendmode.h>
 #include <SDL3/SDL_init.h>
@@ -19,6 +18,7 @@
 
 #include <chrono>
 #include <cmath>
+#include <cstdlib>
 #include <print>
 #include <random>
 #include <stack>
@@ -124,6 +124,10 @@ int main() {
   std::println("path:\n{}", pf::to_string(path));
   std::println("runtime: {} us", us);
 
+  // visualisation
+
+  char* sdl_wayland_hint = "SDL_VIDEO_DRIVER=wayland";
+  putenv(sdl_wayland_hint);
   SDL_Init(SDL_INIT_VIDEO);
 
   int w = cell_w * g.w, h = cell_w * g.h;
